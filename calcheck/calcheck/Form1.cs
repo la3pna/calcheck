@@ -27,6 +27,8 @@ namespace calcheck
         Complex[] s12;
         Complex[] s21;
         Complex[] s22;
+        float[] freq;
+        float[] dataArray;
 
         public Form1()
         {
@@ -38,7 +40,7 @@ namespace calcheck
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void loadSparameterToolStripMenuItem_Click(object sender, EventArgs e) 
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
@@ -48,7 +50,7 @@ namespace calcheck
                 {
                     string line;
                     int i = 0;
-                    List<double> freq = new List<double>();
+                    List<float> freql = new List<float>();
                     List<Complex> s11a = new List<Complex>();
                     List<Complex> s21a = new List<Complex>();
                     List<Complex> s22a = new List<Complex>();
@@ -61,7 +63,7 @@ namespace calcheck
                        System.IO.StreamReader(openFileDialog1.FileName);
                     while ((line = sr.ReadLine()) != null)
                     {
-                        textBox1.Text = line;
+                        
 
                         if (line.ToLowerInvariant().Contains('!'))
                         {
@@ -76,7 +78,7 @@ namespace calcheck
                             measure = defstrn[3];
                             Z0 = defstrn[5];
 
-                            textBox5.Text = Z0;
+                            label4.Text = Z0;
 
                             if (paramtype != "S")
                             {
@@ -100,12 +102,12 @@ namespace calcheck
                             string s11imagStrn = servalspl[2];
                             string s21reStrn = servalspl[3];
                             string s21imagStrn = servalspl[4];
-                            string s22reStrn = servalspl[5];
-                            string s22imagStrn = servalspl[6];
-                            string s12reStrn = servalspl[7];
-                            string s12imagStrn = servalspl[8];
+                            string s22reStrn = servalspl[7];
+                            string s22imagStrn = servalspl[8];
+                            string s12reStrn = servalspl[5];
+                            string s12imagStrn = servalspl[6];
 
-                            double freqa = Convert.ToDouble(freqStrn, CultureInfo.InvariantCulture);
+                            float freqa = Convert.ToSingle(freqStrn, CultureInfo.InvariantCulture);
 
                             float s11re = Convert.ToSingle(s11reStrn, CultureInfo.InvariantCulture);
                             float s11imag = Convert.ToSingle(s11imagStrn, CultureInfo.InvariantCulture);
@@ -136,7 +138,7 @@ namespace calcheck
                             }
 
 
-                            if (measure == "DB")
+                            else //(measure == "DB")
                             {
                                 
                                 // 10^db/20 for each real part. then got polar.
@@ -146,7 +148,7 @@ namespace calcheck
                                 s22b = Complex.FromPolarCoordinates( Math.Pow(10, (s22re/20)), s22imag * Math.PI / 180);
                             }
 
-                            freq.Add(freqa);
+                            freql.Add(freqa);
                             s11a.Add(s11b);
                             s12a.Add(s12b);
                             s21a.Add(s21b);
@@ -161,29 +163,127 @@ namespace calcheck
                     }
 
                     sr.Close();
-
+                    freq = freql.ToArray();
                     s11 = s11a.ToArray();
                     s21 = s21a.ToArray();
                     s12 = s12a.ToArray();
                     s22 = s22a.ToArray();
                 }
+                calculate();
                 }
             
             catch (Exception ex)
             {
-               textBox2.Text= ("The file could not be read:");
-               textBox1.Text=(ex.Message);
+              label2.Text= ("The file could not be read:" + ex.Message);
+               
             }
-
-                    }
+     }
 
         private void label1_Click(object sender, EventArgs e)
         {
 
         }
 
-      
+        private void calculate()
+        {
             
+            List<float> e = new List<float>();
+
+            for (int i = 0; i < vectorLength - 1; i++)
+            {
+               // dataArray[i] = (float)Complex.Abs(Complex.Divide((Complex.Abs(Complex.Add(Complex.Multiply(s11[i] , Complex.Conjugate(s21[i])), Complex.Multiply(s12[i], Complex.Conjugate(s22[i])))))  ,    (Complex.Sqrt(Complex.Multiply(Complex.Subtract((Complex.Subtract(1,Complex.Pow(Complex.Abs(s11[i]),2))),Complex.Pow(Complex.Abs(s12[i]),2))),(Complex.Subtract((Complex.Subtract(1,Complex.Pow(Complex.Abs(s21[i]),2))),Complex.Pow(Complex.Abs(s22[i]),2)))))));
+            Complex a = (Complex.Abs(Complex.Add(Complex.Multiply(s11[i], Complex.Conjugate(s21[i])), Complex.Multiply(s12[i], Complex.Conjugate(s22[i])))));    
+            Complex b = (Complex.Subtract((Complex.Subtract(1,Complex.Pow(Complex.Abs(s11[i]),2))),Complex.Pow(Complex.Abs(s12[i]),2)));
+            Complex c = (Complex.Subtract((Complex.Subtract(1,Complex.Pow(Complex.Abs(s21[i]),2))),Complex.Pow(Complex.Abs(s22[i]),2)));
+            Complex d = (Complex.Divide(a, Complex.Sqrt( Complex.Multiply(b,c))));
+            float f = (float)( d.Magnitude );
+
+            
+                e.Add(f);               
+            }
+
+           dataArray = e.ToArray();
+
+            //abs(s11*conj(s21)+s12*conj(s22))/(sqrt((1-abs(s11)^2-abs(s12)^2)*(1-abs(s21)^2-abs(s22)^2)))
+            this.panel1.Invalidate();
+        }
+
+        private void saveOpenTcheckToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+           //
+            Stream myStream;
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "Comma separated (*.csv)|*.csv";
+            saveFileDialog1.FilterIndex = 1;
+            saveFileDialog1.RestoreDirectory = true;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if ((myStream = saveFileDialog1.OpenFile()) != null)
+                {
+                    var extension = Path.GetExtension(saveFileDialog1.FileName);
+                    switch (extension.ToLower())
+                    {
+                         case ".csv":
+                         StreamWriter wText = new StreamWriter(myStream);
+                         wText.WriteLine("OpenT-Check ");
+                         int length = dataArray.Length;
+                         for (int i = 0; i <= length - 1; i++)
+                            {
+                                wText.WriteLine(Convert.ToString(freq[i], CultureInfo.InvariantCulture ) + ',' + Convert.ToString(dataArray[i], CultureInfo.InvariantCulture ));
+                            }
+                        wText.Flush();
+                        wText.Close();
+                        break;
+                        default:
+                        throw new ArgumentOutOfRangeException(extension);
+                    }
+                }
+                // Bitmap bmp = new Bitmap(panel1.Width, panel1.Height);
+                // panel1.DrawToBitmap(bmp, panel1.Bounds);
+                // bmp.Save(@"C:\Temp\Test.bmp");
+            }
+        }
+
+            private void panel1_Paint(object sender, PaintEventArgs e)
+            {
+                if (freq != null)
+                {
+                    Graphics ClientDC = panel1.CreateGraphics();
+                    Pen Pen1 = new Pen(System.Drawing.Color.Blue, 1);
+                    Pen Pen2 = new Pen(System.Drawing.Color.Black, 1);
+                    Pen Pen3 = new Pen(System.Drawing.Color.Red, 1);
+                    float xmax = (float)freq.Max() + 1;
+                    float ymax = (float)dataArray.Max() + 1;
+                    label9.Text = Convert.ToString(((float)freq.Max() - (float)freq.Min()));
+                    label10.Text = Convert.ToString(((float)dataArray.Max() - (float)dataArray.Min())*100);
+                    float xscale = panel1.Width;
+                    float yscale = panel1.Height;
+                    float length = dataArray.Length;
+
+                    for (int i = 0; i < length - 1; i++)
+                    {
+                        ClientDC.DrawLine(Pen1, ((freq[i] / xmax) * xscale), Math.Abs((dataArray[i] / ymax) - 1) * yscale, ((freq[i + 1] / xmax) * xscale), Math.Abs((dataArray[i + 1] / ymax) - 1) * yscale);
+                    //    ClientDC.DrawLine(Pen3, ((float)i * xscale), ( (float)i * yscale), ((float)i+1 * xscale), ((float)i+1 * yscale));
+                    }
+
+                    for (int i = 0; i <= 11; i++)
+                    {
+                        ClientDC.DrawLine(Pen2, (i * xscale) / 10, (0 * yscale), (i * xscale) / 10, (1 * yscale));
+                    }
+                    for (int i = 0; i <= 11; i++)
+                    {
+                        ClientDC.DrawLine(Pen2, (0 * xscale), (i * yscale) / 10, (1 * xscale), (i * yscale) / 10);
+                    }
+
+                     label5.Text = Convert.ToString(freq.Min());
+                     label6.Text = Convert.ToString(freq.Max());
+                     label7.Text = Convert.ToString(dataArray.Min()*100);
+                     label8.Text = Convert.ToString(dataArray.Max()*100);
+                }
+
+
+            }
 
         
 
