@@ -37,7 +37,16 @@ namespace calcheck
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            label4.Text = "";
+            label5.Text = "";
+            label6.Text = "";
+            label7.Text = "";
+            label8.Text = "";
+            label9.Text = "";
+            label10.Text = "";
+            label14.Text = "";
+            label15.Text = "";
+            label16.Text = "";
         }
 
         private void loadSparameterToolStripMenuItem_Click(object sender, EventArgs e) 
@@ -56,15 +65,10 @@ namespace calcheck
                     List<Complex> s22a = new List<Complex>();
                     List<Complex> s12a = new List<Complex>();
 
-
-
-
                     System.IO.StreamReader sr = new
                        System.IO.StreamReader(openFileDialog1.FileName);
                     while ((line = sr.ReadLine()) != null)
                     {
-                        
-
                         if (line.ToLowerInvariant().Contains('!'))
                         {
                         }
@@ -79,6 +83,7 @@ namespace calcheck
                             Z0 = defstrn[5];
 
                             label4.Text = Z0;
+                            label14.Text = freqBase;
 
                             if (paramtype != "S")
                             {
@@ -137,10 +142,8 @@ namespace calcheck
                                 s12b = new Complex(s12re, s12imag);
                             }
 
-
                             else //(measure == "DB")
-                            {
-                                
+                            {  
                                 // 10^db/20 for each real part. then got polar.
                                 s11b = Complex.FromPolarCoordinates( Math.Pow(10, (s11re/20)), s11imag * Math.PI / 180);
                                 s12b = Complex.FromPolarCoordinates( Math.Pow(10, (s12re/20)), s12imag * Math.PI / 180);
@@ -156,12 +159,8 @@ namespace calcheck
                             i = i + 1;
 
                         }
-
-
                         vectorLength = i;
-
                     }
-
                     sr.Close();
                     freq = freql.ToArray();
                     s11 = s11a.ToArray();
@@ -255,8 +254,8 @@ namespace calcheck
                     Pen Pen3 = new Pen(System.Drawing.Color.Red, 1);
                     float xmax = (float)freq.Max() + 1;
                     float ymax = (float)dataArray.Max() + 1;
-                    label9.Text = Convert.ToString(((float)freq.Max() - (float)freq.Min()));
-                    label10.Text = Convert.ToString(((float)dataArray.Max() - (float)dataArray.Min())*100);
+                    label10.Text = Convert.ToString(((float)freq.Max() - (float)freq.Min()));
+                    label9.Text = Convert.ToString(((float)dataArray.Max() - (float)dataArray.Min())*100);
                     float xscale = panel1.Width;
                     float yscale = panel1.Height;
                     float length = dataArray.Length;
@@ -280,12 +279,10 @@ namespace calcheck
                      label6.Text = Convert.ToString(freq.Max());
                      label7.Text = Convert.ToString(dataArray.Min()*100);
                      label8.Text = Convert.ToString(dataArray.Max()*100);
+                     label15.Text = Convert.ToString(dataArray.Max() * 100);
+                     label16.Text = Convert.ToString(dataArray.Min()*100);
+
                 }
-
-
             }
-
-        
-
     }
 }
