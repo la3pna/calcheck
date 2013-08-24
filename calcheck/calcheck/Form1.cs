@@ -190,11 +190,13 @@ namespace calcheck
 
             for (int i = 0; i < vectorLength - 1; i++)
             {
-               // dataArray[i] = (float)Complex.Abs(Complex.Divide((Complex.Abs(Complex.Add(Complex.Multiply(s11[i] , Complex.Conjugate(s21[i])), Complex.Multiply(s12[i], Complex.Conjugate(s22[i])))))  ,    (Complex.Sqrt(Complex.Multiply(Complex.Subtract((Complex.Subtract(1,Complex.Pow(Complex.Abs(s11[i]),2))),Complex.Pow(Complex.Abs(s12[i]),2))),(Complex.Subtract((Complex.Subtract(1,Complex.Pow(Complex.Abs(s21[i]),2))),Complex.Pow(Complex.Abs(s22[i]),2)))))));
-            Complex a = (Complex.Abs(Complex.Add(Complex.Multiply(s11[i], Complex.Conjugate(s21[i])), Complex.Multiply(s12[i], Complex.Conjugate(s22[i])))));    
-            Complex b = (Complex.Subtract((Complex.Subtract(1,Complex.Pow(Complex.Abs(s11[i]),2))),Complex.Pow(Complex.Abs(s12[i]),2)));
-            Complex c = (Complex.Subtract((Complex.Subtract(1,Complex.Pow(Complex.Abs(s21[i]),2))),Complex.Pow(Complex.Abs(s22[i]),2)));
-            Complex d = (Complex.Divide(a, Complex.Sqrt( Complex.Multiply(b,c))));
+                //  abs(s11*conj(s21)+s12*conj(s22))/(sqrt((1-abs(s11)^2-abs(s12)^2)*(1-abs(s21)^2-abs(s22)^2))) 
+            Complex a = Complex.Abs(Complex.Add(Complex.Multiply(s11[i], Complex.Conjugate(s21[i])), Complex.Multiply(s12[i], Complex.Conjugate(s22[i]))));
+            Complex p = s11[i];
+            Complex q = Complex.Pow(Complex.Abs(s12[i]), 2);
+            Complex b = Complex.Subtract(Complex.Subtract(1,Complex.Pow(Complex.Abs(s11[i]), 2)), Complex.Pow(Complex.Abs(s12[i]), 2));
+            Complex c = Complex.Subtract(Complex.Subtract(1,Complex.Pow(Complex.Abs(s21[i]), 2)), Complex.Pow(Complex.Abs(s22[i]), 2));
+            Complex d = Complex.Divide(a, Complex.Sqrt( Complex.Multiply(b,c)));
             float f = (float)( d.Magnitude );
 
             
