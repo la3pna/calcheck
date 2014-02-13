@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Globalization;
+using ZedGraph;
 using System.Numerics;
 
 
@@ -27,8 +28,8 @@ namespace calcheck
         Complex[] s12;
         Complex[] s21;
         Complex[] s22;
-        float[] freq;
-        float[] dataArray;
+        double[] freq;
+        double[] dataArray;
 
         public Form1()
         {
@@ -38,15 +39,11 @@ namespace calcheck
         private void Form1_Load(object sender, EventArgs e)
         {
             label4.Text = "";
-            label5.Text = "";
-            label6.Text = "";
-            label7.Text = "";
-            label8.Text = "";
-            label9.Text = "";
-            label10.Text = "";
+           
             label14.Text = "";
             label15.Text = "";
             label16.Text = "";
+
         }
 
         private void loadSparameterToolStripMenuItem_Click(object sender, EventArgs e) 
@@ -59,7 +56,7 @@ namespace calcheck
                 {
                     string line;
                     int i = 0;
-                    List<float> freql = new List<float>();
+                    List<double> freql = new List<double>();
                     List<Complex> s11a = new List<Complex>();
                     List<Complex> s21a = new List<Complex>();
                     List<Complex> s22a = new List<Complex>();
@@ -87,7 +84,7 @@ namespace calcheck
 
                             if (paramtype != "S")
                             {
-                                label2.Text = "PARAMETER NOT S-PARAMETERS!";
+                               // label2.Text = "PARAMETER NOT S-PARAMETERS!";
                             }
 
                         }
@@ -116,12 +113,12 @@ namespace calcheck
 
                             float s11re = Convert.ToSingle(s11reStrn, CultureInfo.InvariantCulture);
                             float s11imag = Convert.ToSingle(s11imagStrn, CultureInfo.InvariantCulture);
-                            float s21re = Convert.ToSingle(s11reStrn, CultureInfo.InvariantCulture);
-                            float s21imag = Convert.ToSingle(s11imagStrn, CultureInfo.InvariantCulture);
-                            float s22re = Convert.ToSingle(s11reStrn, CultureInfo.InvariantCulture);
-                            float s22imag = Convert.ToSingle(s11imagStrn, CultureInfo.InvariantCulture);
-                            float s12re = Convert.ToSingle(s11reStrn, CultureInfo.InvariantCulture);
-                            float s12imag = Convert.ToSingle(s11imagStrn, CultureInfo.InvariantCulture);
+                            float s21re = Convert.ToSingle(s21reStrn, CultureInfo.InvariantCulture);
+                            float s21imag = Convert.ToSingle(s21imagStrn, CultureInfo.InvariantCulture);
+                            float s22re = Convert.ToSingle(s22reStrn, CultureInfo.InvariantCulture);
+                            float s22imag = Convert.ToSingle(s22imagStrn, CultureInfo.InvariantCulture);
+                            float s12re = Convert.ToSingle(s12reStrn, CultureInfo.InvariantCulture);
+                            float s12imag = Convert.ToSingle(s12imagStrn, CultureInfo.InvariantCulture);
 
                             if (measure == "MA")
                             {
@@ -173,7 +170,7 @@ namespace calcheck
             
             catch (Exception ex)
             {
-              label2.Text= ("The file could not be read:" + ex.Message);
+             // label2.Text= ("The file could not be read:" + ex.Message);
                
             }
      }
@@ -186,18 +183,28 @@ namespace calcheck
         private void calculate()
         {
             
-            List<float> e = new List<float>();
+            List<double> e = new List<double>();
 
-            for (int i = 0; i < vectorLength - 1; i++)
+            for (int i = 0; i < vectorLength ; i++)
             {
-                //  abs(s11*conj(s21)+s12*conj(s22))/(sqrt((1-abs(s11)^2-abs(s12)^2)*(1-abs(s21)^2-abs(s22)^2))) 
-            Complex a = Complex.Abs(Complex.Add(Complex.Multiply(s11[i], Complex.Conjugate(s21[i])), Complex.Multiply(s12[i], Complex.Conjugate(s22[i]))));
-            Complex p = s11[i];
-            Complex q = Complex.Pow(Complex.Abs(s12[i]), 2);
-            Complex b = Complex.Subtract(Complex.Subtract(1,Complex.Pow(Complex.Abs(s11[i]), 2)), Complex.Pow(Complex.Abs(s12[i]), 2));
-            Complex c = Complex.Subtract(Complex.Subtract(1,Complex.Pow(Complex.Abs(s21[i]), 2)), Complex.Pow(Complex.Abs(s22[i]), 2));
-            Complex d = Complex.Divide(a, Complex.Sqrt( Complex.Multiply(b,c)));
-            float f = (float)( d.Magnitude );
+
+
+           // abs(s11*conj(s21)+s12*conj(s22))/(sqrt((1-abs(s11)^2-abs(s12)^2)*(1-abs(s21)^2-abs(s22)^2)))
+          
+           Complex a = Complex.Abs(Complex.Add(Complex.Multiply(s11[i], Complex.Conjugate(s21[i])), Complex.Multiply(s12[i], Complex.Conjugate(s22[i]))));
+          //A works
+          Complex b = Complex.Subtract(Complex.Subtract(1,Complex.Pow(Complex.Abs(s11[i]), 2.00)), Complex.Pow(Complex.Abs(s12[i]), 2.00));
+           Complex c = Complex.Subtract(Complex.Subtract(1,Complex.Pow(Complex.Abs(s21[i]), 2.00)), Complex.Pow(Complex.Abs(s22[i]), 2.00));
+           Complex d = Complex.Divide(a, Complex.Sqrt( Complex.Multiply(b,c)));
+
+           // the simplified code for an reciprocal device works:
+
+            //abs(s11*conj(s21) + s21*conj(s11)) / (1 - abs(s11)^2 - abs(s21)^2)
+            //    Complex a = Complex.Abs(Complex.Add(Complex.Multiply(s11[i], Complex.Conjugate(s21[i])),Complex.Multiply(s21[i], Complex.Conjugate(s11[i]))));
+             //   Complex b = Complex.Subtract(Complex.Subtract(1.0, Complex.Pow(Complex.Abs(s11[i]),2.0)), Complex.Pow(Complex.Abs(s21[i]),2.0));
+             //   Complex d = Complex.Divide(a, b);
+
+                double f = (double)( d.Magnitude );
 
             
                 e.Add(f);               
@@ -206,7 +213,13 @@ namespace calcheck
            dataArray = e.ToArray();
 
             //abs(s11*conj(s21)+s12*conj(s22))/(sqrt((1-abs(s11)^2-abs(s12)^2)*(1-abs(s21)^2-abs(s22)^2)))
-            this.panel1.Invalidate();
+
+           plotdata();
+
+            label15.Text = Convert.ToString(string.Format("{0:0.00}", (dataArray.Max() * 100) - 100));
+            label16.Text = Convert.ToString(string.Format("{0:0.00}",(100-(dataArray.Min()*100))));
+
+
         }
 
         private void saveOpenTcheckToolStripMenuItem_Click(object sender, EventArgs e)
@@ -246,45 +259,34 @@ namespace calcheck
             }
         }
 
-            private void panel1_Paint(object sender, PaintEventArgs e)
-            {
-                if (freq != null)
-                {
-                    Graphics ClientDC = panel1.CreateGraphics();
-                    Pen Pen1 = new Pen(System.Drawing.Color.Blue, 1);
-                    Pen Pen2 = new Pen(System.Drawing.Color.Black, 1);
-                    Pen Pen3 = new Pen(System.Drawing.Color.Red, 1);
-                    float xmax = (float)freq.Max() + 1;
-                    float ymax = (float)dataArray.Max() + 1;
-                    label10.Text = Convert.ToString(((float)freq.Max() - (float)freq.Min()));
-                    label9.Text = Convert.ToString(((float)dataArray.Max() - (float)dataArray.Min())*100);
-                    float xscale = panel1.Width;
-                    float yscale = panel1.Height;
-                    float length = dataArray.Length;
+        private void plotdata() 
+        {
+            // This is to remove all plots
+            zedGraphControl1.GraphPane.CurveList.Clear();
 
-                    for (int i = 0; i < length - 1; i++)
-                    {
-                        ClientDC.DrawLine(Pen1, ((freq[i] / xmax) * xscale), Math.Abs((dataArray[i] / ymax) - 1) * yscale, ((freq[i + 1] / xmax) * xscale), Math.Abs((dataArray[i + 1] / ymax) - 1) * yscale);
-                    //    ClientDC.DrawLine(Pen3, ((float)i * xscale), ( (float)i * yscale), ((float)i+1 * xscale), ((float)i+1 * yscale));
-                    }
+            // GraphPane object holds one or more Curve objects (or plots)
+            GraphPane myPane = zedGraphControl1.GraphPane;
 
-                    for (int i = 0; i <= 11; i++)
-                    {
-                        ClientDC.DrawLine(Pen2, (i * xscale) / 10, (0 * yscale), (i * xscale) / 10, (1 * yscale));
-                    }
-                    for (int i = 0; i <= 11; i++)
-                    {
-                        ClientDC.DrawLine(Pen2, (0 * xscale), (i * yscale) / 10, (1 * xscale), (i * yscale) / 10);
-                    }
+            // PointPairList holds the data for plotting, X and Y arrays 
+            PointPairList spl1 = new PointPairList(freq, dataArray);
+         //   PointPairList spl2 = new PointPairList(x, z);
 
-                     label5.Text = Convert.ToString(freq.Min());
-                     label6.Text = Convert.ToString(freq.Max());
-                     label7.Text = Convert.ToString(dataArray.Min()*100);
-                     label8.Text = Convert.ToString(dataArray.Max()*100);
-                     label15.Text = Convert.ToString(dataArray.Max() * 100);
-                     label16.Text = Convert.ToString(dataArray.Min()*100);
+            // Add cruves to myPane object
+            LineItem myCurve1 = myPane.AddCurve("T-check 1", spl1, Color.Blue, SymbolType.None);
+          //  LineItem myCurve2 = myPane.AddCurve("Cosine Wave", spl2, Color.Red, SymbolType.None);
 
-                }
-            }
+            myCurve1.Line.Width = 3.0F;
+          //  myCurve2.Line.Width = 3.0F;
+            myPane.Title.Text = "T-check";
+            myPane.YAxis.Title.Text = "Error";
+            myPane.XAxis.Title.Text = "Frequency";
+
+            // I add all three functions just to be sure it refeshes the plot.   
+            zedGraphControl1.AxisChange();
+            zedGraphControl1.Invalidate();
+            zedGraphControl1.Refresh();
+
+        }
+           
     }
 }
