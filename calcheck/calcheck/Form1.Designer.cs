@@ -38,7 +38,6 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rSAppnoteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveDebugFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label4 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
@@ -47,6 +46,7 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.zedGraphControl1 = new ZedGraph.ZedGraphControl();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -105,8 +105,7 @@
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.helpFileToolStripMenuItem,
-            this.rSAppnoteToolStripMenuItem,
-            this.saveDebugFileToolStripMenuItem});
+            this.rSAppnoteToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
@@ -114,20 +113,16 @@
             // helpFileToolStripMenuItem
             // 
             this.helpFileToolStripMenuItem.Name = "helpFileToolStripMenuItem";
-            this.helpFileToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.helpFileToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.helpFileToolStripMenuItem.Text = "Help file";
+            this.helpFileToolStripMenuItem.Click += new System.EventHandler(this.helpFileToolStripMenuItem_Click);
             // 
             // rSAppnoteToolStripMenuItem
             // 
             this.rSAppnoteToolStripMenuItem.Name = "rSAppnoteToolStripMenuItem";
             this.rSAppnoteToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.rSAppnoteToolStripMenuItem.Text = "R&S App-note ";
-            // 
-            // saveDebugFileToolStripMenuItem
-            // 
-            this.saveDebugFileToolStripMenuItem.Name = "saveDebugFileToolStripMenuItem";
-            this.saveDebugFileToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.saveDebugFileToolStripMenuItem.Text = "Save debug file";
+            this.rSAppnoteToolStripMenuItem.Click += new System.EventHandler(this.rSAppnoteToolStripMenuItem_Click);
             // 
             // label4
             // 
@@ -141,7 +136,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(840, 250);
+            this.label11.Location = new System.Drawing.Point(859, 243);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(59, 13);
             this.label11.TabIndex = 11;
@@ -150,7 +145,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(840, 323);
+            this.label12.Location = new System.Drawing.Point(859, 318);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(56, 13);
             this.label12.TabIndex = 12;
@@ -159,7 +154,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(837, 168);
+            this.label13.Location = new System.Drawing.Point(859, 168);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(57, 13);
             this.label13.TabIndex = 13;
@@ -168,7 +163,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(846, 190);
+            this.label14.Location = new System.Drawing.Point(859, 191);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(41, 13);
             this.label14.TabIndex = 14;
@@ -177,7 +172,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(846, 272);
+            this.label15.Location = new System.Drawing.Point(859, 269);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(41, 13);
             this.label15.TabIndex = 15;
@@ -186,7 +181,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(846, 343);
+            this.label16.Location = new System.Drawing.Point(859, 342);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(41, 13);
             this.label16.TabIndex = 16;
@@ -206,11 +201,23 @@
             this.zedGraphControl1.Size = new System.Drawing.Size(819, 392);
             this.zedGraphControl1.TabIndex = 17;
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(837, 401);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(80, 17);
+            this.checkBox1.TabIndex = 18;
+            this.checkBox1.Text = "LOG FREQ";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(929, 457);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.zedGraphControl1);
             this.Controls.Add(this.label16);
             this.Controls.Add(this.label15);
@@ -243,7 +250,6 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rSAppnoteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveDebugFileToolStripMenuItem;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
@@ -252,6 +258,7 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label16;
         private ZedGraph.ZedGraphControl zedGraphControl1;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 

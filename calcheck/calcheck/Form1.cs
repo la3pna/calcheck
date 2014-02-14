@@ -43,6 +43,14 @@ namespace calcheck
             label14.Text = "";
             label15.Text = "";
             label16.Text = "";
+            GraphPane myPane = zedGraphControl1.GraphPane;
+            myPane.Title.Text = "T-check";
+            myPane.YAxis.Title.Text = "Error";
+            myPane.XAxis.Title.Text = "Frequency";
+            myPane.XAxis.MajorGrid.IsVisible = true;
+            myPane.YAxis.MajorGrid.IsVisible = true;
+            // I add all three functions just to be sure it refeshes the plot.   
+            zedGraphControl1.AxisChange();
 
         }
 
@@ -267,6 +275,21 @@ namespace calcheck
             // GraphPane object holds one or more Curve objects (or plots)
             GraphPane myPane = zedGraphControl1.GraphPane;
 
+            if (checkBox1.Checked == true)
+            {
+                myPane.XAxis.Type = AxisType.Log;
+                myPane.XAxis.MinorGrid.IsVisible = true;
+                myPane.XAxis.Scale.Mag = 0;
+               zedGraphControl1.AxisChange();
+            }
+            else 
+            {
+                myPane.XAxis.Type = AxisType.Linear;
+              //  myPane.XAxis.MinorGrid.IsVisible = false;
+                myPane.XAxis.Scale.Mag = 0;
+                zedGraphControl1.AxisChange();
+            }
+            
             // PointPairList holds the data for plotting, X and Y arrays 
             PointPairList spl1 = new PointPairList(freq, dataArray);
          //   PointPairList spl2 = new PointPairList(x, z);
@@ -274,18 +297,38 @@ namespace calcheck
             // Add cruves to myPane object
             LineItem myCurve1 = myPane.AddCurve("T-check 1", spl1, Color.Blue, SymbolType.None);
           //  LineItem myCurve2 = myPane.AddCurve("Cosine Wave", spl2, Color.Red, SymbolType.None);
-
+            
             myCurve1.Line.Width = 3.0F;
           //  myCurve2.Line.Width = 3.0F;
             myPane.Title.Text = "T-check";
             myPane.YAxis.Title.Text = "Error";
-            myPane.XAxis.Title.Text = "Frequency";
-
+            myPane.XAxis.Title.Text = "Frequency " + freqBase ;
+            myPane.XAxis.MajorGrid.IsVisible = true;
+            myPane.YAxis.MajorGrid.IsVisible = true;
             // I add all three functions just to be sure it refeshes the plot.   
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
             zedGraphControl1.Refresh();
 
+        }
+
+        private void rSAppnoteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+          string path = Path.GetDirectoryName(Application.ExecutablePath); 
+          path =  path + "\\rsan.pdf";
+          System.Diagnostics.Process.Start(@path);
+        }
+
+        private void helpFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string path = Path.GetDirectoryName(Application.ExecutablePath);
+            path = path + "\\help.pdf";
+            System.Diagnostics.Process.Start(@path);
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            calculate();
         }
            
     }
