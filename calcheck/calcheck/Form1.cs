@@ -138,7 +138,7 @@ namespace calcheck
                                 //Complex c1 = Complex.FromPolarCoordinates(10, 45 * Math.PI / 180)
                             }
 
-                            if (measure == "RI")
+                            else if (measure == "RI")
                             {
                                 //leave as is
                                 s11b = new Complex(s11re, s11imag);
@@ -147,14 +147,23 @@ namespace calcheck
                                 s12b = new Complex(s12re, s12imag);
                             }
 
-                            else //(measure == "DB")
-                            {  
+                           else if (measure == "DB") //(measure == "DB")
+                            {
                                 // 10^db/20 for each real part. then got polar.
-                                s11b = Complex.FromPolarCoordinates( Math.Pow(10, (s11re/20)), s11imag * Math.PI / 180);
-                                s12b = Complex.FromPolarCoordinates( Math.Pow(10, (s12re/20)), s12imag * Math.PI / 180);
-                                s21b = Complex.FromPolarCoordinates( Math.Pow(10, (s21re/20)), s21imag * Math.PI / 180);
-                                s22b = Complex.FromPolarCoordinates( Math.Pow(10, (s22re/20)), s22imag * Math.PI / 180);
+                                s11b = Complex.FromPolarCoordinates(Math.Pow(10, (s11re / 20)), s11imag * Math.PI / 180);
+                                s12b = Complex.FromPolarCoordinates(Math.Pow(10, (s12re / 20)), s12imag * Math.PI / 180);
+                                s21b = Complex.FromPolarCoordinates(Math.Pow(10, (s21re / 20)), s21imag * Math.PI / 180);
+                                s22b = Complex.FromPolarCoordinates(Math.Pow(10, (s22re / 20)), s22imag * Math.PI / 180);
                             }
+
+                            else
+                            {
+                                s11b = Complex.Zero;
+                                s21b = Complex.Zero;
+                                s12b = Complex.Zero;
+                                s22b = Complex.Zero;
+                            }
+    
 
                             freql.Add(freqa);
                             s11a.Add(s11b);
